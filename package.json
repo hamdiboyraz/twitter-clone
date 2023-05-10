@@ -1,0 +1,39 @@
+{
+  "name": "twitter-clone",
+  "version": "1.0.0",
+  "description": "backend challenge",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index",
+    "test": "cross-env NODE_ENV=testing jest --verbose",
+    "migrate": "knex migrate:latest",
+    "seed": "knex seed:run",
+    "rollback": "knex migrate:rollback",
+    "resetdb": "knex migrate:rollback && knex migrate:latest && knex seed:run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hamdiboyraz/twitter-clone.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hamdiboyraz/twitter-clone/issues"
+  },
+  "homepage": "https://github.com/hamdiboyraz/twitter-clone#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "knex": "^2.4.2",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.22",
+    "supertest": "^6.3.3"
+  }
+}
