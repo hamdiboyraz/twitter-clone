@@ -9,6 +9,8 @@
     "test": "cross-env NODE_ENV=testing jest --verbose",
     "migrate": "knex migrate:latest",
     "seed": "knex seed:run",
+    "makemigrate": "knex migrate:make",
+    "makeseed": "knex seed:make",
     "rollback": "knex migrate:rollback",
     "resetdb": "knex migrate:rollback && knex migrate:latest && knex seed:run"
   },
