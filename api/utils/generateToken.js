@@ -4,7 +4,7 @@ const { JWT_SECRET, JWT_EXPIRES_IN } = require("../../config/config.js");
 
 const generateToken = (user) => {
   const payload = {
-    userId: user.user_id,
+    user_id: user.user_id,
     username: user.username,
     email: user.email,
     role: user.role,
