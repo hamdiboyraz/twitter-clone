@@ -51,7 +51,7 @@ router.use(authMiddleware.protected);
 
 router.get("/", async (req, res, next) => {
   const users = await userModel.getAll();
-  return res.status(200).json(users);
+  return res.status(200).json({ "Total Users": users.length, users });
 });
 
 // Get User

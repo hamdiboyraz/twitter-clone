@@ -3,12 +3,13 @@ const router = require("express").Router();
 const tweetModel = require("./tweets-model");
 const tweetMiddleware = require("./tweets-middleware");
 const authMiddleware = require("../auth/auth-middleware");
+
 // Base URL: /api/v1/tweets
 
 router.get("/", async (req, res, next) => {
   try {
     const tweets = await tweetModel.getAll();
-    return res.status(200).json(tweets);
+    return res.status(200).json({ "Total Tweets": tweets.length, tweets });
   } catch (error) {
     next(error);
   }
@@ -41,19 +42,27 @@ router.post("/", async (req, res, next) => {
 });
 
 router.put("/:id", tweetMiddleware.checkTwitterId, async (req, res, next) => {
-  const tweet_id = req.params.id;
-  const { tweet } = req.body;
-  const updatedTweet = await tweetModel.findByIdAndUpdate(tweet_id, tweet);
-  return res.status(200).json(updatedTweet);
+  try {
+    const tweet_id = req.params.id;
+    const { tweet } = req.body;
+    const updatedTweet = await tweetModel.findByIdAndUpdate(tweet_id, tweet);
+    return res.status(200).json(updatedTweet);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.delete(
   "/:id",
   tweetMiddleware.checkTwitterId,
   async (req, res, next) => {
-    const tweet_id = req.params.id;
-    tweetModel.findByIdAndDelete(tweet_id);
-    return res.status(204).send();
+    try {
+      const tweet_id = req.params.id;
+      await tweetModel.findByIdAndDelete(tweet_id);
+      return res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
   }
 );
 

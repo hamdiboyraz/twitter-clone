@@ -1,8 +1,6 @@
 const db = require("../../data/db-config");
 
 const getAll = () => {
-  console.log("hi");
-
   return db("tweets as t")
     .leftJoin("users as u", "u.user_id", "t.user_id")
     .select("t.*", "u.username", "u.email");
@@ -12,7 +10,7 @@ const getById = (id) => {
   return db("tweets").where("tweet_id", id).first();
 };
 
-const create = (tweet, user_id) => {
+const create = (tweet) => {
   return db("tweets").insert(tweet);
 };
 

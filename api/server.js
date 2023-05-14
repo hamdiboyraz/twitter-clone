@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const authRouter = require("./auth/auth-router");
 const usersRouter = require("./users/users-router");
 const tweetsRouter = require("./tweets/tweets-router");
+const commentsRouter = require("./comments/comments-router");
 
 // Initialize express server
 const server = express();
@@ -19,7 +20,7 @@ server.use(morgan("dev"));
 server.use("/api/v1/auth", authRouter);
 server.use("/api/v1/users", usersRouter);
 server.use("/api/v1/tweets", tweetsRouter);
-// server.use("/api/v1/comments");
+server.use("/api/v1/comments", commentsRouter);
 // server.use("/api/v1/likes");
 
 // Global Error Handler
