@@ -4,7 +4,7 @@ const authRouter = require("./auth/auth-router");
 const usersRouter = require("./users/users-router");
 const tweetsRouter = require("./tweets/tweets-router");
 const commentsRouter = require("./comments/comments-router");
-
+const likesRouter = require("./likes/likes-router");
 // Initialize express server
 const server = express();
 
@@ -21,7 +21,7 @@ server.use("/api/v1/auth", authRouter);
 server.use("/api/v1/users", usersRouter);
 server.use("/api/v1/tweets", tweetsRouter);
 server.use("/api/v1/comments", commentsRouter);
-// server.use("/api/v1/likes");
+server.use("/api/v1/likes", likesRouter);
 
 // Global Error Handler
 server.use((err, req, res, next) => {

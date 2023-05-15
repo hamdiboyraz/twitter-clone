@@ -2,6 +2,7 @@ const router = require("express").Router();
 const userModel = require("./users-model");
 const userMiddleware = require("./users-middleware");
 const authMiddleware = require("../auth/auth-middleware");
+const likeModel = require("../likes/likes-model");
 
 // Base URL: /api/v1/users
 
@@ -51,32 +52,73 @@ router.use(authMiddleware.protected);
 
 router.get("/", async (req, res, next) => {
   const users = await userModel.getAll();
-  return res.status(200).json({ "Total Users": users.length, users });
+  try {
+    return res.status(200).json({ "Total Users": users.length, users });
+  } catch (error) {
+    next(error);
+  }
 });
 
 // Get User
 router.get("/:id", userMiddleware.checkUserId, async (req, res, next) => {
-  const { id } = req.params;
-  const user = await userModel.getById(id);
-  return res.status(200).json(user);
+  try {
+    const { id } = req.params;
+    const user = await userModel.getById(id);
+    return res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
 });
 // Update User
 router.put("/:id", userMiddleware.checkUserId, async (req, res, next) => {
-  const { id } = req.params;
-  const { username, email, role, active } = req.body;
-  const updatedUser = await userModel.findByIdAndUpdate(id, {
-    username,
-    email,
-    role,
-    active,
-  });
-  return res.status(200).json(updatedUser);
+  try {
+    const { id } = req.params;
+    const { username, email, role, active } = req.body;
+    const updatedUser = await userModel.findByIdAndUpdate(id, {
+      username,
+      email,
+      role,
+      active,
+    });
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
 });
 // Delete User
 router.delete("/:id", userMiddleware.checkUserId, async (req, res, next) => {
   const { id } = req.params;
   await userModel.findByIdAndDelete(id);
   return res.status(204).send();
+});
+
+router.get("/:id/likes", userMiddleware.checkUserId, async (req, res, next) => {
+  const { id } = req.params;
+  const likesByUser = await likeModel.getLikesByUser(id);
+
+  //reduce
+  // const formattedLikes = likesByUser.reduce((result, like) => {
+  //   const { user_id, tweet, ...likeData } = like;
+  //   if (!result[user_id]) {
+  //     result[user_id] = { user_id, likes: [] };
+  //   }
+  //   result[user_id].likes.push({ tweet, ...likeData });
+  //   return result;
+  // }, {});
+
+  const formattedLikes = {};
+
+  likesByUser.forEach((like) => {
+    const { user_id, tweet, ...likeData } = like;
+
+    if (!formattedLikes[user_id]) {
+      formattedLikes[user_id] = { user_id, likes: [] };
+    }
+
+    formattedLikes[user_id].likes.push({ tweet, ...likeData });
+  });
+
+  res.json(Object.values(formattedLikes));
 });
 
 module.exports = router;

@@ -3,7 +3,11 @@ const userModel = require("../users/users-model.js");
 const payLoadCheck = async (req, res, next) => {
   try {
     const { username, email } = req.body;
-    if (username.trim().length < 6 || username.trim().length > 20) {
+    if (
+      !username ||
+      username.trim().length < 6 ||
+      username.trim().length > 20
+    ) {
       return next({
         status: 400,
         message: "Username must be between 6 and 20 characters long",

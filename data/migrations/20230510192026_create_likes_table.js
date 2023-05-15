@@ -5,6 +5,7 @@
 exports.up = function (knex) {
   return knex.schema.createTable("likes", function (table) {
     table.increments("like_id").primary();
+    table.boolean("isLiked").defaultTo(true);
     table
       .integer("user_id")
       .references("user_id")
