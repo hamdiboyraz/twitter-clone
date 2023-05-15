@@ -23,10 +23,20 @@ const findByIdAndUpdate = async (id, comment) => {
 const findByIdAndDelete = async (id) => {
   await db("comments").where({ comment_id: id }).del();
 };
+
+const getCommentsByUser = async (id) => {
+  return db("comments as c")
+    .leftJoin("tweets as t", "t.tweet_id", "c.tweet_id")
+    .leftJoin("users as u", "u.user_id", "c.user_id")
+    .where("c.user_id", id)
+    .select("c.*", "t.tweet");
+};
+
 module.exports = {
   getAll,
   getById,
   create,
   findByIdAndUpdate,
   findByIdAndDelete,
+  getCommentsByUser,
 };

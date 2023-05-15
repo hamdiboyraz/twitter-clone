@@ -2,7 +2,10 @@ const router = require("express").Router();
 const userModel = require("./users-model");
 const userMiddleware = require("./users-middleware");
 const authMiddleware = require("../auth/auth-middleware");
+const tweetModel = require("../tweets/tweets-model");
+const commentModel = require("../comments/comments-model");
 const likeModel = require("../likes/likes-model");
+const groupByUser = require("../utils/groupByUser");
 
 // Base URL: /api/v1/users
 
@@ -21,7 +24,7 @@ router.get("/me", async (req, res, next) => {
 router.put("/me", userMiddleware.payLoadCheck, async (req, res, next) => {
   try {
     const { username, email } = req.body;
-    const updatedMe = await userModel.findByIdAndUpdate(req.user.userId, {
+    const updatedMe = await userModel.findByIdAndUpdate(req.user.user_id, {
       username,
       email,
     });
@@ -35,16 +38,43 @@ router.put("/me", userMiddleware.payLoadCheck, async (req, res, next) => {
 // Delete Profile
 router.delete("/me", async (req, res, next) => {
   try {
-    await userModel.findByIdAndDelete(req.user.userId);
+    await userModel.findByIdAndDelete(req.user.user_id);
     return res.status(204).send();
   } catch (error) {
     next(error);
   }
 });
 
-router.get("/me/tweets", async (req, res, next) => {});
-router.get("/me/comments", async (req, res, next) => {});
-router.get("/me/likes", async (req, res, next) => {});
+router.get("/me/tweets", async (req, res, next) => {
+  try {
+    const id = req.user.user_id;
+    const tweetsByUser = await tweetModel.getTweetsByUser(id);
+    const formattedTweets = groupByUser(tweetsByUser, "tweets");
+    res.status(200).json(Object.values(formattedTweets));
+  } catch (error) {
+    next(error);
+  }
+});
+router.get("/me/comments", async (req, res, next) => {
+  try {
+    const id = req.user.user_id;
+    const commentsByUser = await commentModel.getCommentsByUser(id);
+    const formattedComments = groupByUser(commentsByUser, "comments");
+    res.status(200).json(Object.values(formattedComments));
+  } catch (error) {
+    next(error);
+  }
+});
+router.get("/me/likes", async (req, res, next) => {
+  try {
+    const id = req.user.user_id;
+    const likesByUser = await likeModel.getLikesByUser(id);
+    const formattedLikes = groupByUser(likesByUser, "likes");
+    res.status(200).json(Object.values(formattedLikes));
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Get All Users
 //Below routes are admin only
@@ -93,32 +123,42 @@ router.delete("/:id", userMiddleware.checkUserId, async (req, res, next) => {
 });
 
 router.get("/:id/likes", userMiddleware.checkUserId, async (req, res, next) => {
-  const { id } = req.params;
-  const likesByUser = await likeModel.getLikesByUser(id);
+  try {
+    const { id } = req.params;
+    const likesByUser = await likeModel.getLikesByUser(id);
 
-  //reduce
-  // const formattedLikes = likesByUser.reduce((result, like) => {
-  //   const { user_id, tweet, ...likeData } = like;
-  //   if (!result[user_id]) {
-  //     result[user_id] = { user_id, likes: [] };
-  //   }
-  //   result[user_id].likes.push({ tweet, ...likeData });
-  //   return result;
-  // }, {});
+    // OPT1-REDUCE
+    // const formattedLikes = likesByUser.reduce((result, like) => {
+    //   const { user_id, tweet, ...likeData } = like;
+    //   if (!result[user_id]) {
+    //     result[user_id] = { user_id, likes: [] };
+    //   }
+    //   result[user_id].likes.push({ tweet, ...likeData });
+    //   return result;
+    // }, {});
 
-  const formattedLikes = {};
+    // OPT2
+    // const formattedLikes = {};
 
-  likesByUser.forEach((like) => {
-    const { user_id, tweet, ...likeData } = like;
+    // likesByUser.forEach((like) => {
+    //   const { user_id, tweet, ...likeData } = like;
 
-    if (!formattedLikes[user_id]) {
-      formattedLikes[user_id] = { user_id, likes: [] };
-    }
+    //   if (!formattedLikes[user_id]) {
+    //     formattedLikes[user_id] = { user_id, likes: [] };
+    //   }
 
-    formattedLikes[user_id].likes.push({ tweet, ...likeData });
-  });
+    //   formattedLikes[user_id].likes.push({ tweet, ...likeData });
+    // });
 
-  res.json(Object.values(formattedLikes));
+    // console.log(formattedLikes);
+
+    // OPT3-FUNCTION
+    const formattedLikes = groupByUser(likesByUser, "likes");
+
+    res.status(200).json(Object.values(formattedLikes));
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;

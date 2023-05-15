@@ -23,10 +23,19 @@ const findByIdAndUpdate = async (id, tweet) => {
 const findByIdAndDelete = async (id) => {
   await db("tweets").where({ tweet_id: id }).del();
 };
+
+const getTweetsByUser = async (id) => {
+  return db("tweets as t")
+    .leftJoin("users as u", "u.user_id", "t.user_id")
+    .where("t.user_id", id)
+    .select("t.*");
+};
+
 module.exports = {
   getAll,
   getById,
   create,
   findByIdAndUpdate,
   findByIdAndDelete,
+  getTweetsByUser,
 };
