@@ -78,7 +78,7 @@ router.get("/me/likes", async (req, res, next) => {
 
 // Get All Users
 //Below routes are admin only
-router.use(authMiddleware.protected);
+router.use(authMiddleware.isProtected);
 
 router.get("/", async (req, res, next) => {
   const users = await userModel.getAll();

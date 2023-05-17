@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index",
     "dev": "nodemon index",
-    "test": "cross-env NODE_ENV=testing jest --verbose",
+    "test": "cross-env NODE_ENV=testing jest --verbose  --watchAll --runInBand",
     "migrate": "knex migrate:latest",
     "seed": "knex seed:run",
     "makemigrate": "knex migrate:make",
@@ -34,6 +34,7 @@
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.1",
     "cross-env": "^7.0.3",
     "jest": "^29.5.0",
     "nodemon": "^2.0.22",

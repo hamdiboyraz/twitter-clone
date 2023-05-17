@@ -7,7 +7,7 @@ const authMiddleware = require("../auth/auth-middleware");
 
 router.use(authMiddleware.isAuthenticated);
 
-router.get("/", authMiddleware.protected, async (req, res, next) => {
+router.get("/", authMiddleware.isProtected, async (req, res, next) => {
   try {
     const likes = await likeModel.getAll();
     return res.status(200).json({ "Total Likes": likes.length, likes });
@@ -29,7 +29,7 @@ router.post("/", async (req, res, next) => {
     next(error);
   }
 });
-router.put("/:id", async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const updatedLike = await likeModel.findByIdAndUpdate(id);

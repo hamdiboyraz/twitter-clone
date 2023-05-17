@@ -100,7 +100,7 @@ const isAuthenticated = async (req, res, next) => {
   }
 };
 
-const protected = async (req, res, next) => {
+const isProtected = async (req, res, next) => {
   try {
     const { role } = req.user;
     if (role !== "admin") {
@@ -117,5 +117,5 @@ module.exports = {
   loginPayloadCheck,
   credentialsCheck,
   isAuthenticated,
-  protected,
+  isProtected,
 };
