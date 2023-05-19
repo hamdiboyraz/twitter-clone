@@ -2,6 +2,7 @@ const router = require("express").Router();
 
 const likeModel = require("./likes-model");
 const authMiddleware = require("../auth/auth-middleware");
+const likeMiddleware = require("./likes-middleware");
 
 // Base URL: /api/v1/likes
 
@@ -29,7 +30,7 @@ router.post("/", async (req, res, next) => {
     next(error);
   }
 });
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", likeMiddleware.checkLikeId, async (req, res, next) => {
   try {
     const { id } = req.params;
     const updatedLike = await likeModel.findByIdAndUpdate(id);
